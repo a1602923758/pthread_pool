@@ -62,11 +62,12 @@ void* PthreadPool::pthreadFunc(void* args){
 			moveAblePthreads(pid);
 		}
 		pthread_mutex_unlock(&myMutex);
+		pthread_cond_signal(&myCond);
 	}
 }
 
 PthreadPool::PthreadPool(int n){
-	maxPthreadNum=2*n;
+	maxPthreadNum=n;
 	create(n);
 
 }
@@ -74,10 +75,10 @@ PthreadPool::PthreadPool(int n){
 int PthreadPool::submit(Task* task){
 	pthread_mutex_lock(&myMutex);
 	myTaskList.push_back(task);
-	if (ablePthreads.size()==0 && (buzyPthreads.size()<maxPthreadNum)){
-		create(1);
-	}
-	else if (buzyPthreads.size()>=maxPthreadNum) while (ablePthreads.size()==0);
+	//if (ablePthreads.size()==0 && (buzyPthreads.size()<maxPthreadNum)){
+	//	create(1);
+	//}
+	//else if (buzyPthreads.size()>=maxPthreadNum) while (ablePthreads.size()==0);
 	pthread_mutex_unlock(&myMutex);
 	pthread_cond_signal(&myCond);
 	return 0;
